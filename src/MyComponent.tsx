@@ -641,8 +641,8 @@ const IslamicLearningApp = () => {
           <button
             onClick={continueLearning}
             style={styles.continueButton}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#047857'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#059669'}
+            onMouseOver={(e) => (e.target as HTMLElement).backgroundColor = '#047857'}
+            onMouseOut={(e) => (e.target as HTMLElement).backgroundColor = '#059669'}
           >
             Continue Learning
           </button>
@@ -734,12 +734,12 @@ const IslamicLearningApp = () => {
             }}
             onMouseOver={(e) => {
               if (selectedAnswer !== null) {
-                e.target.style.backgroundColor = '#047857';
+                (e.target as HTMLElement).backgroundColor = '#047857';
               }
             }}
             onMouseOut={(e) => {
               if (selectedAnswer !== null) {
-                e.target.style.backgroundColor = '#059669';
+                (e.target as HTMLElement).backgroundColor = '#059669';
               }
             }}
           >
@@ -819,12 +819,12 @@ const IslamicLearningApp = () => {
               }}
               onMouseOver={(e) => {
                 if (currentView !== 'home') {
-                  e.target.style.backgroundColor = '#f3f4f6';
+                  (e.target as HTMLElement).backgroundColor = '#f3f4f6';
                 }
               }}
               onMouseOut={(e) => {
                 if (currentView !== 'home') {
-                  e.target.style.backgroundColor = 'transparent';
+                  (e.target as HTMLElement).backgroundColor = 'transparent';
                 }
               }}
             >
@@ -838,12 +838,12 @@ const IslamicLearningApp = () => {
               }}
               onMouseOver={(e) => {
                 if (currentView !== 'profile') {
-                  e.target.style.backgroundColor = '#f3f4f6';
+                  (e.target as HTMLElement).backgroundColor = '#f3f4f6';
                 }
               }}
               onMouseOut={(e) => {
                 if (currentView !== 'profile') {
-                  e.target.style.backgroundColor = 'transparent';
+                  (e.target as HTMLElement).backgroundColor = 'transparent';
                 }
               }}
             >
