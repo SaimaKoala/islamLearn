@@ -115,7 +115,7 @@ const IslamicLearningApp = () => {
     nav: {
       backgroundColor: 'white',
       borderBottom: '1px solid #e5e7eb',
-      position: 'sticky',
+      position: 'sticky' as const,
       top: 0,
       zIndex: 10
     },
@@ -308,7 +308,7 @@ const IslamicLearningApp = () => {
     optionButton: {
       width: '100%',
       padding: '1rem',
-      textAlign: 'left',
+      textAlign: 'left' as const,
       borderRadius: '0.75rem',
       border: '2px solid',
       cursor: 'pointer',
@@ -574,7 +574,7 @@ const IslamicLearningApp = () => {
             <h2 style={styles.headerTitle}>Assalamu Alaikum!</h2>
             <p style={styles.headerSubtitle}>Continue your Islamic studies journey</p>
           </div>
-          <div style={{textAlign: 'right'}}>
+          <div style={{textAlign: 'right' as const}}>
             <div style={styles.xpDisplay}>
               <Star size={20} />
               <span style={styles.xpText}>{userProgress.totalXP} XP</span>
@@ -641,8 +641,8 @@ const IslamicLearningApp = () => {
           <button
             onClick={continueLearning}
             style={styles.continueButton}
-            onMouseOver={(e) => (e.target as HTMLElement).backgroundColor = '#047857'}
-            onMouseOut={(e) => (e.target as HTMLElement).backgroundColor = '#059669'}
+            onMouseOver={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#047857'
+            onMouseOut={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = '#059669'}
           >
             Continue Learning
           </button>
@@ -734,12 +734,12 @@ const IslamicLearningApp = () => {
             }}
             onMouseOver={(e) => {
               if (selectedAnswer !== null) {
-                (e.target as HTMLElement).backgroundColor = '#047857';
+                (e.currentTarget as HTMLElement).style.backgroundColor = '#047857';
               }
             }}
             onMouseOut={(e) => {
               if (selectedAnswer !== null) {
-                (e.target as HTMLElement).backgroundColor = '#059669';
+                (e.currentTarget as HTMLElement).style.backgroundColor = '#059669';
               }
             }}
           >
@@ -819,12 +819,12 @@ const IslamicLearningApp = () => {
               }}
               onMouseOver={(e) => {
                 if (currentView !== 'home') {
-                  (e.target as HTMLElement).backgroundColor = '#f3f4f6';
+                  (e.currentTarget as HTMLElement).style.backgroundColor = '#f3f4f6';
                 }
               }}
               onMouseOut={(e) => {
                 if (currentView !== 'home') {
-                  (e.target as HTMLElement).backgroundColor = 'transparent';
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
                 }
               }}
             >
@@ -838,12 +838,12 @@ const IslamicLearningApp = () => {
               }}
               onMouseOver={(e) => {
                 if (currentView !== 'profile') {
-                  (e.target as HTMLElement).backgroundColor = '#f3f4f6';
+                  (e.currentTarget as HTMLElement).style.backgroundColor = '#f3f4f6';
                 }
               }}
               onMouseOut={(e) => {
                 if (currentView !== 'profile') {
-                  (e.target as HTMLElement).backgroundColor = 'transparent';
+                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
                 }
               }}
             >
