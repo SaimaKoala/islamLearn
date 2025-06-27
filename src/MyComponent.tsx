@@ -641,7 +641,7 @@ const IslamicLearningApp = () => {
           <button
             onClick={continueLearning}
             style={styles.continueButton}
-            onMouseOver={(e) => (e.currentTarget as HTMLButtonElement).style.backgroundColor = '#047857'
+            onMouseOver={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = '#047857'}
             onMouseOut={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = '#059669'}
           >
             Continue Learning
