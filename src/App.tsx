@@ -3,7 +3,6 @@ import './App.css'
 import MyComponent from './MyComponent';
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>

@@ -412,7 +412,7 @@ const IslamicLearningApp = () => {
       padding: '1.5rem',
       maxWidth: '32rem',
       margin: '0 auto',
-      textAlign: 'center'
+      textAlign: 'center' as const
     },
     completeIcon: {
       backgroundColor: '#dcfce7',
@@ -450,7 +450,7 @@ const IslamicLearningApp = () => {
       margin: '0 auto'
     },
     profileHeader: {
-      textAlign: 'center',
+      textAlign: 'center' as const,
       marginBottom: '2rem'
     },
     profileAvatar: {
@@ -487,7 +487,7 @@ const IslamicLearningApp = () => {
       gap: '1rem'
     },
     statCard: {
-      textAlign: 'center'
+      textAlign: 'center' as const
     },
     statValue: {
       fontSize: '1.5rem',
