@@ -1,4 +1,3 @@
-import React, { useState} from 'react';
 import { BookOpen, Star, Trophy, CheckCircle, XCircle, ArrowRight, Home, User, Award, Play } from 'lucide-react';
 
 const IslamicLearningApp = () => {
