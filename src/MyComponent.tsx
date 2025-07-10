@@ -153,6 +153,7 @@ const App = () => {
   const PrayersPage = () => {
     const [clickedPrayer, setClickedPrayer] = useState('');
     const [currentlyPlaying, setCurrentlyPlaying] = useState('');
+    const [bookmarkedPrayers, setBookmarkedPrayers] = useState([]);
 
     const prayers = [
       {
