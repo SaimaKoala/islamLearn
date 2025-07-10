@@ -3,7 +3,7 @@ import { useState } from 'react';
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [activeTab, setActiveTab] = useState('home');
- 
+  const [bookmarkedPrayers, setBookmarkedPrayers] = useState([]);
 
   // Home Page Component
   const HomePage = () => {
@@ -370,7 +370,7 @@ const [currentlyPlaying, setCurrentlyPlaying] = useState<string>('');
 
           {/* Prayer Sections */}
           <div className="space-y-4">
-            {prayers.map((prayer, index) => (
+            {prayers.map((prayer) => (
               <div
                 key={prayer.id}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105"
