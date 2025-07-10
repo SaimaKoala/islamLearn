@@ -1,863 +1,687 @@
-import { useState} from 'react';
-import { BookOpen, Star, Trophy, CheckCircle, XCircle, ArrowRight, Home, User, Award, Play } from 'lucide-react';
+import React, { useState } from 'react';
 
-const IslamicLearningApp = () => {
-  const [currentView, setCurrentView] = useState('home');
-  const [userProgress, setUserProgress] = useState({
-    totalXP: 0,
-    streak: 3,
-    completedLessons: 0,
-    level: 1
-  });
-  const [currentLesson, setCurrentLesson] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [showResult, setShowResult] = useState(false);
-  const [lessonComplete, setLessonComplete] = useState(false);
+const App = () => {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [activeTab, setActiveTab] = useState('home');
+  const [bookmarkedPrayers, setBookmarkedPrayers] = useState([]);
 
-  const lessons = [
-    {
-      title: "Five Pillars of Islam",
-      description: "Learn about the fundamental practices",
-      xp: 50,
-      completed: true,
-      questions: [
-        {
-          type: "multiple-choice",
-          question: "What is the first pillar of Islam?",
-          options: ["Shahada (Declaration of Faith)", "Salah (Prayer)", "Zakat (Charity)", "Hajj (Pilgrimage)"],
-          correct: 0,
-          explanation: "Shahada is the declaration of faith and the first pillar of Islam."
-        },
-        {
-          type: "multiple-choice",
-          question: "How many times do Muslims pray daily?",
-          options: ["3 times", "4 times", "5 times", "6 times"],
-          correct: 2,
-          explanation: "Muslims perform Salah (prayer) five times daily at prescribed times."
-        },
-        {
-          type: "true-false",
-          question: "Zakat is giving charity to those in need",
-          options: ["True", "False"],
-          correct: 0,
-          explanation: "Zakat is indeed the pillar of Islam involving charitable giving to help those in need."
-        }
-      ]
-    },
-    {
-      title: "Prophets in Islam",
-      description: "Understanding the messengers of Allah",
-      xp: 60,
-      completed: false,
-      questions: [
-        {
-          type: "multiple-choice",
-          question: "Who is considered the final messenger in Islam?",
-          options: ["Moses (Musa)", "Jesus (Isa)", "Muhammad", "Abraham (Ibrahim)"],
-          correct: 2,
-          explanation: "Prophet Muhammad is considered the final messenger in Islam."
-        },
-        {
-          type: "multiple-choice",
-          question: "Which prophet is known for building the Kaaba?",
-          options: ["Abraham (Ibrahim)", "Moses (Musa)", "Noah (Nuh)", "David (Dawud)"],
-          correct: 0,
-          explanation: "Prophet Abraham (Ibrahim) along with his son Ishmael built the Kaaba."
-        }
-      ]
-    },
-    {
-      title: "Islamic Calendar & Festivals",
-      description: "Learn about important Islamic dates",
-      xp: 45,
-      completed: false,
-      questions: [
-        {
-          type: "multiple-choice",
-          question: "What is the holy month of fasting called?",
-          options: ["Shawwal", "Ramadan", "Dhul-Hijjah", "Muharram"],
-          correct: 1,
-          explanation: "Ramadan is the ninth month of the Islamic calendar and the month of fasting."
-        },
-        {
-          type: "true-false",
-          question: "Eid al-Fitr celebrates the end of Ramadan",
-          options: ["True", "False"],
-          correct: 0,
-          explanation: "Eid al-Fitr is indeed the celebration marking the end of the fasting month of Ramadan."
-        }
-      ]
-    },
-    {
-      title: "Holy Quran",
-      description: "Understanding Islam's holy book",
-      xp: 55,
-      completed: false,
-      questions: [
-        {
-          type: "multiple-choice",
-          question: "In which language was the Quran originally revealed?",
-          options: ["Hebrew", "Aramaic", "Arabic", "Persian"],
-          correct: 2,
-          explanation: "The Quran was revealed in Arabic to Prophet Muhammad."
-        }
-      ]
-    }
-  ];
-
-  const styles = {
-    container: {
-      minHeight: '100vh',
-      backgroundColor: '#f9fafb',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
-    },
-    nav: {
-      backgroundColor: 'white',
-      borderBottom: '1px solid #e5e7eb',
-      position: 'sticky' as const,
-      top: 0,
-      zIndex: 10
-    },
-    navContent: {
-      maxWidth: '64rem',
-      margin: '0 auto',
-      padding: '1rem 1.5rem',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    },
-    logo: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      color: '#059669'
-    },
-    navButtons: {
-      display: 'flex',
-      gap: '0.25rem'
-    },
-    navButton: {
-      padding: '0.75rem',
-      borderRadius: '0.75rem',
-      border: 'none',
-      cursor: 'pointer',
-      transition: 'background-color 0.2s'
-    },
-    navButtonActive: {
-      backgroundColor: '#dcfce7',
-      color: '#059669'
-    },
-    navButtonInactive: {
-      backgroundColor: 'transparent',
-      color: '#6b7280'
-    },
-    homeContainer: {
-      padding: '1.5rem',
-      maxWidth: '64rem',
-      margin: '0 auto'
-    },
-    headerStats: {
-      marginBottom: '2rem',
-      background: 'linear-gradient(to right, #059669, #047857)',
-      borderRadius: '1rem',
-      padding: '1.5rem',
-      color: 'white'
-    },
-    headerStatsContent: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    },
-    headerTitle: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      marginBottom: '0.5rem'
-    },
-    headerSubtitle: {
-      opacity: 0.9
-    },
-    xpDisplay: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      marginBottom: '0.5rem'
-    },
-    xpText: {
-      fontSize: '1.25rem',
-      fontWeight: 'bold'
-    },
-    levelText: {
-      fontSize: '0.875rem',
-      opacity: 0.9
-    },
-    statsRow: {
-      marginTop: '1rem',
-      display: 'flex',
-      gap: '1rem'
-    },
-    statItem: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      fontSize: '0.875rem'
-    },
-    lessonsGrid: {
-      display: 'grid',
-      gap: '1rem'
-    },
-    sectionTitle: {
-      fontSize: '1.25rem',
-      fontWeight: 'bold',
-      marginBottom: '1rem'
-    },
-    lessonCard: {
-      padding: '1rem',
-      borderRadius: '0.75rem',
-      border: '2px solid',
-      cursor: 'pointer',
-      transition: 'all 0.2s',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center'
-    },
-    lessonCardCompleted: {
-      backgroundColor: '#f0fdf4',
-      borderColor: '#bbf7d0'
-    },
-    lessonCardIncomplete: {
-      backgroundColor: 'white',
-      borderColor: '#e5e7eb'
-    },
-    lessonContent: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.75rem'
-    },
-    lessonIcon: {
-      width: '3rem',
-      height: '3rem',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    lessonIconCompleted: {
-      backgroundColor: '#10b981',
-      color: 'white'
-    },
-    lessonIconIncomplete: {
-      backgroundColor: '#e5e7eb',
-      color: '#6b7280'
-    },
-    lessonTitle: {
-      fontWeight: '600',
-      marginBottom: '0.25rem'
-    },
-    lessonDescription: {
-      color: '#6b7280',
-      fontSize: '0.875rem'
-    },
-    lessonMeta: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem'
-    },
-    lessonXp: {
-      fontSize: '0.875rem',
-      fontWeight: '500'
-    },
-    lessonContainer: {
-      padding: '1.5rem',
-      maxWidth: '32rem',
-      margin: '0 auto'
-    },
-    progressSection: {
-      marginBottom: '2rem'
-    },
-    progressInfo: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      fontSize: '0.875rem',
-      color: '#6b7280',
-      marginBottom: '0.5rem'
-    },
-    progressBar: {
-      width: '100%',
-      backgroundColor: '#e5e7eb',
-      borderRadius: '9999px',
-      height: '0.5rem'
-    },
-    progressFill: {
-      backgroundColor: '#059669',
-      height: '0.5rem',
-      borderRadius: '9999px',
-      transition: 'width 0.3s'
-    },
-    questionSection: {
-      marginBottom: '2rem'
-    },
-    questionTitle: {
-      fontSize: '1.25rem',
-      fontWeight: '600',
-      marginBottom: '1.5rem'
-    },
-    optionsContainer: {
-      display: 'grid',
-      gap: '0.75rem'
-    },
-    optionButton: {
-      width: '100%',
-      padding: '1rem',
-      textAlign: 'left' as const,
-      borderRadius: '0.75rem',
-      border: '2px solid',
-      cursor: 'pointer',
-      transition: 'all 0.2s',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.75rem'
-    },
-    optionButtonDefault: {
-      backgroundColor: 'white',
-      borderColor: '#e5e7eb'
-    },
-    optionButtonSelected: {
-      backgroundColor: '#dbeafe',
-      borderColor: '#3b82f6'
-    },
-    optionButtonCorrect: {
-      backgroundColor: '#dcfce7',
-      borderColor: '#10b981',
-      color: '#065f46'
-    },
-    optionButtonIncorrect: {
-      backgroundColor: '#fee2e2',
-      borderColor: '#ef4444',
-      color: '#991b1b'
-    },
-    optionButtonDisabled: {
-      backgroundColor: '#f9fafb',
-      borderColor: '#e5e7eb',
-      color: '#9ca3af'
-    },
-    optionCircle: {
-      width: '1.5rem',
-      height: '1.5rem',
-      borderRadius: '50%',
-      border: '2px solid',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    optionCircleDefault: {
-      borderColor: '#d1d5db'
-    },
-    optionCircleSelected: {
-      backgroundColor: '#3b82f6',
-      borderColor: '#3b82f6'
-    },
-    optionCircleCorrect: {
-      backgroundColor: '#10b981',
-      borderColor: '#10b981'
-    },
-    optionCircleIncorrect: {
-      backgroundColor: '#ef4444',
-      borderColor: '#ef4444'
-    },
-    optionText: {
-      fontWeight: '500'
-    },
-    resultBox: {
-      padding: '1rem',
-      borderRadius: '0.75rem',
-      marginBottom: '1.5rem'
-    },
-    resultBoxCorrect: {
-      backgroundColor: '#dcfce7',
-      color: '#065f46'
-    },
-    resultBoxIncorrect: {
-      backgroundColor: '#fee2e2',
-      color: '#991b1b'
-    },
-    resultHeader: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      marginBottom: '0.5rem',
-      fontWeight: '600'
-    },
-    resultExplanation: {
-      fontSize: '0.875rem'
-    },
-    submitButton: {
-      width: '100%',
-      padding: '1rem',
-      borderRadius: '0.75rem',
-      border: 'none',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'background-color 0.2s'
-    },
-    submitButtonEnabled: {
-      backgroundColor: '#059669',
-      color: 'white'
-    },
-    submitButtonDisabled: {
-      backgroundColor: '#d1d5db',
-      color: '#9ca3af',
-      cursor: 'not-allowed'
-    },
-    completeContainer: {
-      padding: '1.5rem',
-      maxWidth: '32rem',
-      margin: '0 auto',
-      textAlign: 'center' as const
-    },
-    completeIcon: {
-      backgroundColor: '#dcfce7',
-      borderRadius: '50%',
-      width: '6rem',
-      height: '6rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '0 auto 1.5rem'
-    },
-    completeTitle: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold',
-      marginBottom: '1rem',
-      color: '#059669'
-    },
-    completeText: {
-      color: '#6b7280',
-      marginBottom: '1.5rem'
-    },
-    continueButton: {
-      backgroundColor: '#059669',
-      color: 'white',
-      padding: '0.75rem 2rem',
-      borderRadius: '0.75rem',
-      border: 'none',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'background-color 0.2s'
-    },
-    profileContainer: {
-      padding: '1.5rem',
-      maxWidth: '32rem',
-      margin: '0 auto'
-    },
-    profileHeader: {
-      textAlign: 'center' as const,
-      marginBottom: '2rem'
-    },
-    profileAvatar: {
-      width: '5rem',
-      height: '5rem',
-      backgroundColor: '#059669',
-      borderRadius: '50%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      margin: '0 auto 1rem'
-    },
-    profileTitle: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold'
-    },
-    profileGrid: {
-      display: 'grid',
-      gap: '1.5rem'
-    },
-    profileCard: {
-      backgroundColor: 'white',
-      borderRadius: '0.75rem',
-      padding: '1.5rem',
-      border: '1px solid #e5e7eb'
-    },
-    profileCardTitle: {
-      fontWeight: '600',
-      marginBottom: '1rem'
-    },
-    statsGrid: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '1rem'
-    },
-    statCard: {
-      textAlign: 'center' as const
-    },
-    statValue: {
-      fontSize: '1.5rem',
-      fontWeight: 'bold'
-    },
-    statValueGreen: { color: '#059669' },
-    statValueBlue: { color: '#2563eb' },
-    statValueOrange: { color: '#ea580c' },
-    statValuePurple: { color: '#9333ea' },
-    statLabel: {
-      fontSize: '0.875rem',
-      color: '#6b7280'
-    },
-    achievementsList: {
-      display: 'grid',
-      gap: '0.75rem'
-    },
-    achievementItem: {
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.75rem',
-      padding: '0.75rem',
-      borderRadius: '0.5rem'
-    },
-    achievementItemActive: {
-      backgroundColor: '#f0fdf4'
-    },
-    achievementItemInactive: {
-      backgroundColor: '#f9fafb',
-      opacity: 0.5
-    },
-    achievementTitle: {
-      fontWeight: '500'
-    },
-    achievementDescription: {
-      fontSize: '0.875rem',
-      color: '#6b7280'
-    }
-  };
-
-  const handleAnswerSelect = (answerIndex) => {
-    setSelectedAnswer(answerIndex);
-  };
-
-  const handleSubmitAnswer = () => {
-    setShowResult(true);
-    
-    setTimeout(() => {
-      if (currentQuestion < lessons[currentLesson].questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-        setSelectedAnswer(null);
-        setShowResult(false);
-      } else {
-        setLessonComplete(true);
-        setUserProgress(prev => ({
-          ...prev,
-          totalXP: prev.totalXP + lessons[currentLesson].xp,
-          completedLessons: prev.completedLessons + 1,
-          level: Math.floor((prev.totalXP + lessons[currentLesson].xp) / 100) + 1
-        }));
+  // Home Page Component
+  const HomePage = () => {
+    const sections = [
+      {
+        id: 'quran',
+        title: 'The Holy Qur\'an',
+        description: 'Verses and wisdom from the Holy Quran',
+        page: 'quran',
+        gradient: 'from-teal-200/60 to-teal-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1584286595398-a59511e0649d?w=800&h=400&fit=crop',
+        size: 'large'
+      },
+      {
+        id: 'prayers',
+        title: 'Morning and evening invocations',
+        description: 'Daily prayers and supplications',
+        page: 'prayers',
+        gradient: 'from-blue-200/60 to-blue-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=400&fit=crop',
+        size: 'large'
+      },
+      {
+        id: 'friday',
+        title: 'Friday litanies',
+        description: 'Special prayers for Friday',
+        page: 'friday',
+        gradient: 'from-orange-200/60 to-orange-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=800&h=400&fit=crop',
+        size: 'large'
+      },
+      {
+        id: 'prophet',
+        title: 'Prayers upon the Prophet ﷺ',
+        description: 'Salawat and blessings',
+        page: 'prophet',
+        gradient: 'from-purple-200/60 to-purple-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1584467735871-8e85e37e2b6e?w=800&h=400&fit=crop',
+        size: 'large'
+      },
+      {
+        id: 'blessed-events',
+        title: 'Blessed events',
+        description: 'Special occasions',
+        page: 'blessed-events',
+        gradient: 'from-teal-200/60 to-teal-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1542816417-0983c9c9ad53?w=800&h=400&fit=crop',
+        size: 'small'
+      },
+      {
+        id: 'mawlids',
+        title: 'Mawlids, Hadrahs and Poems',
+        description: 'Traditional celebrations',
+        page: 'mawlids',
+        gradient: 'from-blue-200/60 to-blue-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=800&h=400&fit=crop',
+        size: 'small'
+      },
+      {
+        id: 'ziyarahs',
+        title: 'Ziyārahs (Visits)',
+        description: 'Pilgrimage prayers',
+        page: 'ziyarahs',
+        gradient: 'from-orange-200/60 to-orange-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=800&h=400&fit=crop',
+        size: 'small'
+      },
+      {
+        id: 'ahzab',
+        title: 'Ahzāb (Litanies)',
+        description: 'Spiritual litanies',
+        page: 'ahzab',
+        gradient: 'from-purple-200/60 to-purple-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1584467735845-24c10f55dd09?w=800&h=400&fit=crop',
+        size: 'small'
+      },
+      {
+        id: 'protection',
+        title: 'Prayers for protection',
+        description: 'Protective supplications',
+        page: 'protection',
+        gradient: 'from-teal-200/60 to-teal-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1584286595398-a59511e0649d?w=800&h=400&fit=crop',
+        size: 'small'
+      },
+      {
+        id: 'biographies',
+        title: 'Biographies and references',
+        description: 'Scholars and references',
+        page: 'biographies',
+        gradient: 'from-blue-200/60 to-blue-400/60',
+        backgroundImage: 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800&h=400&fit=crop',
+        size: 'small'
       }
-    }, 2000);
-  };
+    ];
 
-  const startLesson = (lessonIndex) => {
-    setCurrentLesson(lessonIndex);
-    setCurrentQuestion(0);
-    setSelectedAnswer(null);
-    setShowResult(false);
-    setLessonComplete(false);
-    setCurrentView('lesson');
-  };
-
-  const continueLearning = () => {
-    setLessonComplete(false);
-    setCurrentView('home');
-  };
-
-  const renderHome = () => (
-    <div style={styles.homeContainer}>
-      <div style={styles.headerStats}>
-        <div style={styles.headerStatsContent}>
-          <div>
-            <h2 style={styles.headerTitle}>Assalamu Alaikum!</h2>
-            <p style={styles.headerSubtitle}>Continue your Islamic studies journey</p>
-          </div>
-          <div style={{textAlign: 'right' as const}}>
-            <div style={styles.xpDisplay}>
-              <Star size={20} />
-              <span style={styles.xpText}>{userProgress.totalXP} XP</span>
-            </div>
-            <div style={styles.levelText}>Level {userProgress.level}</div>
-          </div>
-        </div>
-        
-        <div style={styles.statsRow}>
-          <div style={styles.statItem}>
-            <Trophy size={16} />
-            <span>{userProgress.streak} day streak</span>
-          </div>
-          <div style={styles.statItem}>
-            <BookOpen size={16} />
-            <span>{userProgress.completedLessons} lessons completed</span>
-          </div>
-        </div>
-      </div>
-
-      <div style={styles.lessonsGrid}>
-        <h3 style={styles.sectionTitle}>Your Learning Path</h3>
-        {lessons.map((lesson, index) => (
-          <div
-            key={index}
-            style={{
-              ...styles.lessonCard,
-              ...(lesson.completed ? styles.lessonCardCompleted : styles.lessonCardIncomplete)
-            }}
-            onClick={() => startLesson(index)}
-          >
-            <div style={styles.lessonContent}>
-              <div style={{
-                ...styles.lessonIcon,
-                ...(lesson.completed ? styles.lessonIconCompleted : styles.lessonIconIncomplete)
-              }}>
-                {lesson.completed ? <CheckCircle size={24} /> : <Play size={24} />}
-              </div>
-              <div>
-                <h4 style={styles.lessonTitle}>{lesson.title}</h4>
-                <p style={styles.lessonDescription}>{lesson.description}</p>
-              </div>
-            </div>
-            <div style={styles.lessonMeta}>
-              <Star size={16} color="#eab308" />
-              <span style={styles.lessonXp}>{lesson.xp} XP</span>
-              <ArrowRight size={16} color="#9ca3af" />
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderLesson = () => {
-    if (lessonComplete) {
-      return (
-        <div style={styles.completeContainer}>
-          <div style={styles.completeIcon}>
-            <Trophy size={48} color="#059669" />
-          </div>
-          <h2 style={styles.completeTitle}>Lesson Complete!</h2>
-          <p style={styles.completeText}>You've earned {lessons[currentLesson].xp} XP</p>
-          <button
-            onClick={continueLearning}
-            style={styles.continueButton}
-            onMouseOver={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = '#047857'}
-            onMouseOut={(e) => (e.currentTarget as HTMLElement).style.backgroundColor = '#059669'}
-          >
-            Continue Learning
-          </button>
-        </div>
-      );
-    }
-
-    const question = lessons[currentLesson].questions[currentQuestion];
-    const isCorrect = selectedAnswer === question.correct;
+    const handleSectionClick = (page) => {
+      setCurrentPage(page);
+    };
 
     return (
-      <div style={styles.lessonContainer}>
-        <div style={styles.progressSection}>
-          <div style={styles.progressInfo}>
-            <span>{lessons[currentLesson].title}</span>
-            <span>{currentQuestion + 1} / {lessons[currentLesson].questions.length}</span>
+      <div className="h-screen bg-gray-50 p-4 pb-20 overflow-hidden">
+        <div className="max-w-4xl mx-auto h-full flex flex-col">
+          {/* Header */}
+          <div className="text-center mb-4">
+            <h1 className="text-2xl font-bold text-gray-800 mb-1">
+              Islamic Prayers
+            </h1>
+            <p className="text-sm text-gray-600">
+              Daily prayers and supplications
+            </p>
           </div>
-          <div style={styles.progressBar}>
-            <div
-              style={{
-                ...styles.progressFill,
-                width: `${((currentQuestion + 1) / lessons[currentLesson].questions.length) * 100}%`
-              }}
-            />
-          </div>
-        </div>
 
-        <div style={styles.questionSection}>
-          <h2 style={styles.questionTitle}>{question.question}</h2>
-          
-          <div style={styles.optionsContainer}>
-            {question.options.map((option, index) => {
-              let buttonStyle = {...styles.optionButton, ...styles.optionButtonDefault};
-              let circleStyle = {...styles.optionCircle, ...styles.optionCircleDefault};
-              
-              if (showResult) {
-                if (index === question.correct) {
-                  buttonStyle = {...styles.optionButton, ...styles.optionButtonCorrect};
-                  circleStyle = {...styles.optionCircle, ...styles.optionCircleCorrect};
-                } else if (index === selectedAnswer && selectedAnswer !== question.correct) {
-                  buttonStyle = {...styles.optionButton, ...styles.optionButtonIncorrect};
-                  circleStyle = {...styles.optionCircle, ...styles.optionCircleIncorrect};
-                } else {
-                  buttonStyle = {...styles.optionButton, ...styles.optionButtonDisabled};
-                }
-              } else if (selectedAnswer === index) {
-                buttonStyle = {...styles.optionButton, ...styles.optionButtonSelected};
-                circleStyle = {...styles.optionCircle, ...styles.optionCircleSelected};
-              }
-              
-              return (
-                <button
-                  key={index}
-                  onClick={() => !showResult && handleAnswerSelect(index)}
-                  disabled={showResult}
-                  style={buttonStyle}
-                >
-                  <div style={circleStyle}>
-                    {showResult && index === question.correct && <CheckCircle size={16} color="white" />}
-                    {showResult && index === selectedAnswer && selectedAnswer !== question.correct && <XCircle size={16} color="white" />}
+          {/* Sections Grid */}
+          <div className="grid grid-cols-2 gap-3 flex-1">
+            {sections.map((section) => (
+              <div
+                key={section.id}
+                className="relative overflow-hidden rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105"
+                onClick={() => handleSectionClick(section.page)}
+                style={{
+                  backgroundImage: `url(${section.backgroundImage})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center'
+                }}
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${section.gradient}`}></div>
+                <div className="relative z-10 p-3 text-white h-full flex items-center">
+                  <div className="flex-1">
+                    <h2 className="text-lg font-semibold mb-1 drop-shadow-lg">
+                      {section.title}
+                    </h2>
+                    <p className="text-sm opacity-90 drop-shadow-md">
+                      {section.description}
+                    </p>
                   </div>
-                  <span style={styles.optionText}>{option}</span>
-                </button>
-              );
-            })}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-
-        {showResult && (
-          <div style={{
-            ...styles.resultBox,
-            ...(isCorrect ? styles.resultBoxCorrect : styles.resultBoxIncorrect)
-          }}>
-            <div style={styles.resultHeader}>
-              {isCorrect ? <CheckCircle size={20} /> : <XCircle size={20} />}
-              <span>{isCorrect ? 'Correct!' : 'Not quite right'}</span>
-            </div>
-            <p style={styles.resultExplanation}>{question.explanation}</p>
-          </div>
-        )}
-
-        {!showResult && (
-          <button
-            onClick={handleSubmitAnswer}
-            disabled={selectedAnswer === null}
-            style={{
-              ...styles.submitButton,
-              ...(selectedAnswer !== null ? styles.submitButtonEnabled : styles.submitButtonDisabled)
-            }}
-            onMouseOver={(e) => {
-              if (selectedAnswer !== null) {
-                (e.currentTarget as HTMLElement).style.backgroundColor = '#047857';
-              }
-            }}
-            onMouseOut={(e) => {
-              if (selectedAnswer !== null) {
-                (e.currentTarget as HTMLElement).style.backgroundColor = '#059669';
-              }
-            }}
-          >
-            Submit Answer
-          </button>
-        )}
       </div>
     );
   };
 
-  const renderProfile = () => (
-    <div style={styles.profileContainer}>
-      <div style={styles.profileHeader}>
-        <div style={styles.profileAvatar}>
-          <User size={40} color="white" />
+  // Prayers Page Component
+  const PrayersPage = () => {
+    const [clickedPrayer, setClickedPrayer] = useState('');
+    const [currentlyPlaying, setCurrentlyPlaying] = useState('');
+
+    const prayers = [
+      {
+        id: 'entering-toilet',
+        title: 'Entering the Toilet',
+        description: 'Du\'a to recite before entering the restroom',
+        icon: '🚪',
+        arabic: 'اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْخُبُثِ وَالْخَبَائِثِ',
+        transliteration: 'Allahumma innee a\'oodhu bika minal khubthi wal khabaa\'ith'
+      },
+      {
+        id: 'leaving-toilet',
+        title: 'Leaving the Toilet',
+        description: 'Du\'a to recite after leaving the restroom',
+        icon: '🚪',
+        arabic: 'غُفْرَانَكَ',
+        transliteration: 'Ghufraanak'
+      },
+      {
+        id: 'before-eating',
+        title: 'Before Eating',
+        description: 'Du\'a to recite before meals',
+        icon: '🍽️',
+        arabic: 'بِسْمِ اللَّهِ',
+        transliteration: 'Bismillah'
+      },
+      {
+        id: 'after-eating',
+        title: 'After Eating',
+        description: 'Du\'a to recite after finishing meals',
+        icon: '🍽️',
+        arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَطْعَمَنِي هَذَا وَرَزَقَنِيهِ',
+        transliteration: 'Alhamdulillahi-lladhee at\'amanee haadha wa razaqaneehi'
+      },
+      {
+        id: 'morning-adhkar',
+        title: 'Morning Adhkar',
+        description: 'Morning remembrance and supplications',
+        icon: '🌅',
+        arabic: 'أَذْكَارُ الصَّبَاحِ',
+        transliteration: 'Adhkaar as-sabaah'
+      },
+      {
+        id: 'evening-adhkar',
+        title: 'Evening Adhkar',
+        description: 'Evening remembrance and supplications',
+        icon: '🌇',
+        arabic: 'أَذْكَارُ الْمَسَاءِ',
+        transliteration: 'Adhkaar al-masaa\'i'
+      },
+      {
+        id: 'before-sleep',
+        title: 'Before Sleep',
+        description: 'Du\'a to recite before going to bed',
+        icon: '🛏️',
+        arabic: 'بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا',
+        transliteration: 'Bismika Allahumma amootu wa ahyaa'
+      },
+      {
+        id: 'waking-up',
+        title: 'Upon Waking Up',
+        description: 'Du\'a to recite upon waking from sleep',
+        icon: '☀️',
+        arabic: 'الْحَمْدُ لِلَّهِ الَّذِي أَحْيَانَا بَعْدَ مَا أَمَاتَنَا',
+        transliteration: 'Alhamdulillahi-lladhee ahyaanaa ba\'da maa amaatanaa'
+      },
+      {
+        id: 'leaving-home',
+        title: 'Leaving Home',
+        description: 'Du\'a to recite when leaving the house',
+        icon: '🏠',
+        arabic: 'بِسْمِ اللَّهِ تَوَكَّلْتُ عَلَى اللَّهِ',
+        transliteration: 'Bismillahi tawakkaltu \'ala Allah'
+      },
+      {
+        id: 'entering-home',
+        title: 'Entering Home',
+        description: 'Du\'a to recite when entering the house',
+        icon: '🏠',
+        arabic: 'اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ الْمَوْلَجِ وَخَيْرَ الْمَخْرَجِ',
+        transliteration: 'Allahumma innee as\'aluka khayral-mawlaji wa khayral-makhraji'
+      },
+      {
+        id: 'traveling',
+        title: 'For Traveling',
+        description: 'Du\'a to recite before and during travel',
+        icon: '✈️',
+        arabic: 'سُبْحَانَ الَّذِي سَخَّرَ لَنَا هَذَا',
+        transliteration: 'Subhaana-lladhee sakhkhara lanaa haadha'
+      },
+      {
+        id: 'seeking-forgiveness',
+        title: 'Seeking Forgiveness',
+        description: 'Istighfar and repentance prayers',
+        icon: '🤲',
+        arabic: 'أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ',
+        transliteration: 'Astaghfirullaha-l-\'Azeem'
+      }
+    ];
+
+    const handlePrayerClick = (prayerTitle) => {
+      setClickedPrayer(prayerTitle);
+      setTimeout(() => setClickedPrayer(''), 2000);
+    };
+
+    const handleBookmarkToggle = (prayer, event) => {
+      event.stopPropagation();
+      
+      setBookmarkedPrayers(prev => {
+        const isBookmarked = prev.some(p => p.id === prayer.id);
+        if (isBookmarked) {
+          return prev.filter(p => p.id !== prayer.id);
+        } else {
+          return [...prev, prayer];
+        }
+      });
+    };
+
+    const isBookmarked = (prayerId) => {
+      return bookmarkedPrayers.some(p => p.id === prayerId);
+    };
+
+    const handleAudioPlay = (prayer, event) => {
+      event.stopPropagation();
+      
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+      }
+      
+      if (currentlyPlaying === prayer.id) {
+        setCurrentlyPlaying('');
+        return;
+      }
+      
+      if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(prayer.transliteration);
+        utterance.rate = 0.7;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+        
+        const voices = window.speechSynthesis.getVoices();
+        const arabicVoice = voices.find(voice => 
+          voice.lang.includes('ar') || voice.name.includes('Arabic')
+        );
+        
+        if (arabicVoice) {
+          utterance.voice = arabicVoice;
+          utterance.text = prayer.arabic;
+        }
+        
+        utterance.onstart = () => {
+          setCurrentlyPlaying(prayer.id);
+        };
+        
+        utterance.onend = () => {
+          setCurrentlyPlaying('');
+        };
+        
+        utterance.onerror = () => {
+          setCurrentlyPlaying('');
+          setClickedPrayer('Audio not supported on this device');
+          setTimeout(() => setClickedPrayer(''), 2000);
+        };
+        
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setClickedPrayer('Audio not supported on this device');
+        setTimeout(() => setClickedPrayer(''), 2000);
+      }
+    };
+
+    const handleBackToHome = () => {
+      setCurrentPage('home');
+    };
+
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 pb-20">
+        <div className="max-w-md mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8 pt-4">
+            <button 
+              onClick={handleBackToHome}
+              className="inline-flex items-center text-teal-600 hover:text-teal-800 mb-4 transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Home
+            </button>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+              Morning and evening invocations
+            </h1>
+            <p className="text-base text-gray-600">
+              Supplications for different times and situations
+            </p>
+          </div>
+
+          {/* Click Feedback */}
+          {clickedPrayer && (
+            <div className="bg-teal-100 border border-teal-200 text-teal-800 px-4 py-3 rounded-xl mb-6 text-center">
+              <p>You selected: <strong>{clickedPrayer}</strong></p>
+              <p className="text-sm">In your app, this would show the full prayer text and translation</p>
+            </div>
+          )}
+
+          {/* Prayer Sections */}
+          <div className="space-y-4">
+            {prayers.map((prayer, index) => (
+              <div
+                key={prayer.id}
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:scale-105"
+                onClick={() => handlePrayerClick(prayer.title)}
+              >
+                <div className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1 pr-4">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-1">
+                        {prayer.title}
+                      </h2>
+                      <p className="text-gray-600 text-sm mb-2">
+                        {prayer.description}
+                      </p>
+                      <p className="text-teal-700 text-base mb-1 font-medium">
+                        {prayer.arabic}
+                      </p>
+                      <p className="text-teal-600 text-xs italic">
+                        {prayer.transliteration}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-2 flex-shrink-0">
+                      <button
+                        onClick={(e) => handleBookmarkToggle(prayer, e)}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        title={isBookmarked(prayer.id) ? "Remove bookmark" : "Add bookmark"}
+                      >
+                        <svg 
+                          className={`w-5 h-5 ${isBookmarked(prayer.id) ? 'text-yellow-500 fill-current' : 'text-gray-400'}`}
+                          fill={isBookmarked(prayer.id) ? 'currentColor' : 'none'}
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={(e) => handleAudioPlay(prayer, e)}
+                        className="p-2 hover:bg-teal-100 rounded-full transition-colors"
+                        title="Play audio"
+                      >
+                        {currentlyPlaying === prayer.id ? (
+                          <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 10h6v4H9V10z" />
+                          </svg>
+                        ) : (
+                          <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 8l-5 3v6l5-3V8z" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Add More Section */}
+          <div className="mt-8 mb-20">
+            <div className="bg-white rounded-2xl shadow-lg border-2 border-dashed border-teal-300 hover:border-teal-400 transition-colors cursor-pointer">
+              <div className="p-6 text-center">
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">Add More Prayers</h3>
+                <p className="text-gray-500 text-sm">Click to add additional prayers and supplications</p>
+              </div>
+            </div>
+          </div>
         </div>
-        <h2 style={styles.profileTitle}>Your Progress</h2>
       </div>
+    );
+  };
 
-      <div style={styles.profileGrid}>
-        <div style={styles.profileCard}>
-          <h3 style={styles.profileCardTitle}>Statistics</h3>
-          <div style={styles.statsGrid}>
-            <div style={styles.statCard}>
-              <div style={{...styles.statValue, ...styles.statValueGreen}}>{userProgress.totalXP}</div>
-              <div style={styles.statLabel}>Total XP</div>
+  // Bookmarks Page Component
+  const BookmarksPage = () => {
+    const handleBackToHome = () => {
+      setCurrentPage('home');
+    };
+
+    const handleRemoveBookmark = (prayerId) => {
+      setBookmarkedPrayers(prev => prev.filter(p => p.id !== prayerId));
+    };
+
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 pb-20">
+        <div className="max-w-md mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8 pt-4">
+            <button 
+              onClick={handleBackToHome}
+              className="inline-flex items-center text-teal-600 hover:text-teal-800 mb-4 transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Home
+            </button>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">
+              Bookmarked Prayers
+            </h1>
+            <p className="text-base text-gray-600">
+              Your saved prayers and supplications
+            </p>
+          </div>
+
+          {/* Bookmarked Prayers */}
+          {bookmarkedPrayers.length > 0 ? (
+            <div className="space-y-4">
+              {bookmarkedPrayers.map((prayer) => (
+                <div
+                  key={prayer.id}
+                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 pr-4">
+                        <h2 className="text-lg font-semibold text-gray-800 mb-1">
+                          {prayer.title}
+                        </h2>
+                        <p className="text-gray-600 text-sm mb-2">
+                          {prayer.description}
+                        </p>
+                        <p className="text-teal-700 text-base mb-1 font-medium">
+                          {prayer.arabic}
+                        </p>
+                        <p className="text-teal-600 text-xs italic">
+                          {prayer.transliteration}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleRemoveBookmark(prayer.id)}
+                        className="p-2 hover:bg-red-100 rounded-full transition-colors"
+                        title="Remove bookmark"
+                      >
+                        <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            <div style={styles.statCard}>
-              <div style={{...styles.statValue, ...styles.statValueBlue}}>{userProgress.level}</div>
-              <div style={styles.statLabel}>Current Level</div>
+          ) : (
+            <div className="text-center py-12">
+              <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+              </svg>
+              <h3 className="text-lg font-semibold text-gray-600 mb-2">No bookmarks yet</h3>
+              <p className="text-gray-500 text-sm">
+                Start bookmarking prayers to access them quickly
+              </p>
             </div>
-            <div style={styles.statCard}>
-              <div style={{...styles.statValue, ...styles.statValueOrange}}>{userProgress.streak}</div>
-              <div style={styles.statLabel}>Day Streak</div>
-            </div>
-            <div style={styles.statCard}>
-              <div style={{...styles.statValue, ...styles.statValuePurple}}>{userProgress.completedLessons}</div>
-              <div style={styles.statLabel}>Lessons Done</div>
-            </div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  // Feeds Page Component
+  const FeedsPage = () => {
+    const handleBackToHome = () => {
+      setCurrentPage('home');
+    };
+
+    return (
+      <div className="min-h-screen bg-gray-50 p-4 pb-20">
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-8 pt-4">
+            <button 
+              onClick={handleBackToHome}
+              className="inline-flex items-center text-teal-600 hover:text-teal-800 mb-4 transition-colors"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Back to Home
+            </button>
+            <div className="text-4xl mb-4">📡</div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-4">Feeds</h1>
+            <p className="text-gray-600">This page is under construction</p>
           </div>
         </div>
+      </div>
+    );
+  };
 
-        <div style={styles.profileCard}>
-          <h3 style={styles.profileCardTitle}>Achievements</h3>
-          <div style={styles.achievementsList}>
-            <div style={{...styles.achievementItem, ...styles.achievementItemActive}}>
-              <Award size={24} color="#059669" />
-              <div>
-                <div style={styles.achievementTitle}>First Steps</div>
-                <div style={styles.achievementDescription}>Complete your first lesson</div>
-              </div>
-            </div>
-            <div style={{...styles.achievementItem, ...styles.achievementItemInactive}}>
-              <Award size={24} color="#9ca3af" />
-              <div>
-                <div style={styles.achievementTitle}>Knowledge Seeker</div>
-                <div style={styles.achievementDescription}>Complete 5 lessons</div>
-              </div>
-            </div>
-          </div>
+  // Bottom Navigation Component
+  const BottomNavigation = () => {
+    const navItems = [
+      { id: 'home', label: 'Home', icon: 'home' },
+      { id: 'bookmarks', label: 'Bookmarks', icon: 'bookmark' },
+      { id: 'feeds', label: 'Feeds', icon: 'rss' }
+    ];
+
+    const handleTabClick = (tabId) => {
+      setActiveTab(tabId);
+      if (tabId === 'home') {
+        setCurrentPage('home');
+      } else {
+        setCurrentPage(tabId);
+      }
+    };
+
+    const renderIcon = (iconType) => {
+      const isActive = activeTab === iconType;
+      const iconClass = `w-6 h-6 ${isActive ? 'text-teal-600' : 'text-gray-400'}`;
+      
+      switch (iconType) {
+        case 'home':
+          return (
+            <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          );
+        case 'bookmark':
+          return (
+            <svg className={iconClass} fill={isActive ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+          );
+        case 'rss':
+          return (
+            <svg className={iconClass} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 11-2 0 1 1 0 012 0z" />
+            </svg>
+          );
+        default:
+          return null;
+      }
+    };
+
+    return (
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2">
+        <div className="flex justify-around items-center max-w-md mx-auto">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => handleTabClick(item.id)}
+              className={`flex flex-col items-center space-y-1 py-2 px-3 rounded-lg transition-colors relative ${
+                activeTab === item.id 
+                  ? 'text-teal-600' 
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              {renderIcon(item.icon)}
+              <span className="text-xs font-medium">{item.label}</span>
+              {item.id === 'bookmarks' && bookmarkedPrayers.length > 0 && (
+                <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {bookmarkedPrayers.length}
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const PlaceholderPage = ({ title, icon }) => (
+    <div className="min-h-screen bg-gray-50 p-4">
+      <div className="max-w-md mx-auto">
+        <div className="text-center mb-8 pt-4">
+          <button 
+            onClick={() => setCurrentPage('home')}
+            className="inline-flex items-center text-teal-600 hover:text-teal-800 mb-4 transition-colors"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back to Home
+          </button>
+          <div className="text-4xl mb-4">{icon}</div>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">{title}</h1>
+          <p className="text-gray-600">This page is under construction</p>
         </div>
       </div>
     </div>
   );
 
-  return (
-    <div style={styles.container}>
-      <nav style={styles.nav}>
-        <div style={styles.navContent}>
-          <h1 style={styles.logo}>IslamLearn</h1>
-          <div style={styles.navButtons}>
-            <button
-              onClick={() => setCurrentView('home')}
-              style={{
-                ...styles.navButton,
-                ...(currentView === 'home' ? styles.navButtonActive : styles.navButtonInactive)
-              }}
-              onMouseOver={(e) => {
-                if (currentView !== 'home') {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = '#f3f4f6';
-                }
-              }}
-              onMouseOut={(e) => {
-                if (currentView !== 'home') {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                }
-              }}
-            >
-              <Home size={20} />
-            </button>
-            <button
-              onClick={() => setCurrentView('profile')}
-              style={{
-                ...styles.navButton,
-                ...(currentView === 'profile' ? styles.navButtonActive : styles.navButtonInactive)
-              }}
-              onMouseOver={(e) => {
-                if (currentView !== 'profile') {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = '#f3f4f6';
-                }
-              }}
-              onMouseOut={(e) => {
-                if (currentView !== 'profile') {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = 'transparent';
-                }
-              }}
-            >
-              <User size={20} />
-            </button>
-          </div>
-        </div>
-      </nav>
+  // Render current page
+  const renderCurrentPage = () => {
+    switch (currentPage) {
+      case 'home':
+        return <HomePage />;
+      case 'prayers':
+        return <PrayersPage />;
+      case 'bookmarks':
+        return <BookmarksPage />;
+      case 'feeds':
+        return <FeedsPage />;
+      case 'quran':
+        return <PlaceholderPage title="The Holy Qur'an" icon="📖" />;
+      case 'friday':
+        return <PlaceholderPage title="Friday litanies" icon="🕌" />;
+      case 'prophet':
+        return <PlaceholderPage title="Prayers upon the Prophet ﷺ" icon="💫" />;
+      case 'blessed-events':
+        return <PlaceholderPage title="Blessed events" icon="✨" />;
+      case 'mawlids':
+        return <PlaceholderPage title="Mawlids, Hadrahs and Poems" icon="🎭" />;
+      case 'ziyarahs':
+        return <PlaceholderPage title="Ziyārahs (Visits)" icon="🕋" />;
+      case 'ahzab':
+        return <PlaceholderPage title="Ahzāb (Litanies)" icon="📿" />;
+      case 'protection':
+        return <PlaceholderPage title="Prayers for protection" icon="🛡️" />;
+      case 'biographies':
+        return <PlaceholderPage title="Biographies and references" icon="📚" />;
+      default:
+        return <HomePage />;
+    }
+  };
 
-      {currentView === 'home' && renderHome()}
-      {currentView === 'lesson' && renderLesson()}
-      {currentView === 'profile' && renderProfile()}
+  return (
+    <div className="font-sans">
+      {renderCurrentPage()}
+      <BottomNavigation />
     </div>
   );
 };
 
-export default IslamicLearningApp;
+export default App;
