@@ -3,7 +3,7 @@ import { useState } from 'react';
 const App = () => {
   const [currentPage, setCurrentPage] = useState('home');
   const [activeTab, setActiveTab] = useState('home');
-  const [bookmarkedPrayers, setBookmarkedPrayers] = useState([]);
+  const [bookmarkedPrayers] = useState([]);
 
   // Home Page Component
   const HomePage = () => {
