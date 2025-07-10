@@ -158,8 +158,8 @@ type Prayer = {
   title?: string;
   description?: string;
    icon: string;
-  arabic: string;
-  transliteration: string;
+  arabic?: string;
+  transliteration?: string;
 };
 
 const [bookmarkedPrayers, setBookmarkedPrayers] = useState<Prayer[]>([]);
@@ -446,7 +446,21 @@ const [currentlyPlaying, setCurrentlyPlaying] = useState<string>('');
   };
 
   // Bookmarks Page Component
+
+
   const BookmarksPage = () => {
+
+    type Prayer = {
+  id: string; // or number if you're using numbers
+  title?: string;
+  description?: string;
+   icon: string;
+  arabic?: string;
+  transliteration?: string;
+};
+
+const [bookmarkedPrayers, setBookmarkedPrayers] = useState<Prayer[]>([]);
+
     const handleBackToHome = () => {
       setCurrentPage('home');
     };
