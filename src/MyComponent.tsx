@@ -261,15 +261,12 @@ const App = () => {
     const handleBookmarkToggle = (prayer, event) => {
       event.stopPropagation();
       
-      setBookmarkedPrayers(prev => {
-        const isBookmarked = prev.some(p => p.id === prayer.id);
-        if (isBookmarked) {
-          return prev.filter(p => p.id !== prayer.id);
-        } else {
-          return [...prev, prayer];
-        }
-      });
-    };
+setBookmarkedPrayers(prev => {
+  const isBookmarked = prev.some(p => p.id === prayer.id);
+  return isBookmarked
+    ? prev.filter(p => p.id !== prayer.id)
+    : [...prev, prayer];
+});
 
     const isBookmarked = (prayerId) => {
       return bookmarkedPrayers.some(p => p.id === prayerId);
