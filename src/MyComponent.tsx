@@ -151,9 +151,20 @@ const App = () => {
 
   // Prayers Page Component
   const PrayersPage = () => {
-    const [clickedPrayer, setClickedPrayer] = useState('');
-    const [currentlyPlaying, setCurrentlyPlaying] = useState('');
-    const [bookmarkedPrayers, setBookmarkedPrayers] = useState([]);
+
+
+type Prayer = {
+  id: string; // or number if you're using numbers
+  title?: string;
+  description?: string;
+   icon: string;
+  arabic: string;
+  transliteration: string;
+};
+
+const [bookmarkedPrayers, setBookmarkedPrayers] = useState<Prayer[]>([]);
+const [clickedPrayer, setClickedPrayer] = useState<string>('');
+const [currentlyPlaying, setCurrentlyPlaying] = useState<string>('');
 
     const prayers = [
       {
